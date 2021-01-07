@@ -27,14 +27,13 @@ migrate = Migrate(app, db)
 # Models.
 #----------------------------------------------------------------------------#
 
-# TODO: implement any missing fields, as a database migration using Flask-Migrate
+## implement any missing fields, as a database migration using Flask-Migrate
 
 class Venue(db.Model):
     __tablename__ = 'Venue'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-    # genres = db.Column(db.Array(String))
     address = db.Column(db.String(120))
     city = db.Column(db.String(120))
     state = db.Column(db.String(120))
@@ -46,13 +45,13 @@ class Venue(db.Model):
     image_link = db.Column(db.String(500))
     show_id = db.Column(db.Integer, db.ForeignKey(
         'Show.id'), nullable=False)
+    genres = db.relationship('Genres', backref='venue', lazy=True)
 
 class Artist(db.Model):
     __tablename__ = 'Artist'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-    # genres = db.Column(db.Array(String))
     city = db.Column(db.String(120))
     state = db.Column(db.String(120))
     phone = db.Column(db.String(120))
@@ -63,6 +62,7 @@ class Artist(db.Model):
     image_link = db.Column(db.String(500))
     show_id = db.Column(db.Integer, db.ForeignKey(
         'Show.id'), nullable=False)
+    genres = db.relationship('Genres', backref='artist', lazy=True)
 
 class Show(db.Model):
     __tablename__ = 'Show'
@@ -71,6 +71,16 @@ class Show(db.Model):
     start_time = db.Column(db.DateTime)
     Venue = db.relationship('Venue', backref='show', lazy=True)
     Artist = db.relationship('Artist', backref='show', lazy=True)
+
+class Genres(db.Model):
+    __tablename__ = 'Genres'
+
+    id = db.Column(db.Integer, primary_key=True)
+    genre = db.Column(db.String)
+    artist_id = db.Column(db.Integer, db.ForeignKey(
+        'Artist.id'), nullable=True)
+    venue_id = db.Column(db.Integer, db.ForeignKey(
+        'Venue.id'), nullable=True)
 
 #----------------------------------------------------------------------------#
 # Filters.
